@@ -6,6 +6,7 @@ import (
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
+	//"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -260,7 +261,7 @@ func (c *Connection) setDefaults() {
 	}
 	if c.Transport == nil {
 		c.Transport = &http.Transport{
-			//		TLSClientConfig:    &tls.Config{RootCAs: pool},
+			// TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			//		DisableCompression: true,
 			Proxy:               http.ProxyFromEnvironment,
 			MaxIdleConnsPerHost: 2048,

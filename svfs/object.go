@@ -235,6 +235,17 @@ func (o *Object) delete() error {
 }
 
 func (o *Object) open(mode fuse.OpenFlags, flags *fuse.OpenResponseFlags) (*ObjectHandle, error) {
+	// Workaround for Java's createNewFile() method
+	if mode&fuse.OpenReadWrite == fuse.OpenReadWrite &&
+		mode&fuse.OpenCreate == fuse.OpenCreate &&
+		mode&fuse.OpenExclusive == fuse.OpenExclusive {
+		// In case when Java's createNewFile() is called, it tries to lock file and open it in OpenReadWrite mode
+		// Swift doesn't support O_EXCL and O_RDWR flags, thus we reset them and use O_WRONLY instead O_RDWR.
+		mode &^= fuse.OpenExclusive
+		mode &^= fuse.OpenReadWrite
+		mode &= fuse.OpenWriteOnly
+	}
+
 	oh := &ObjectHandle{
 		target: o,
 		create: mode&fuse.OpenCreate == fuse.OpenCreate,
